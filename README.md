@@ -13,8 +13,8 @@
 
 </div>
 
-Nama: Muhammad Ridho
-NPM : 2208107010064
+**Nama: Muhammad Ridho**
+**NPM : 2208107010064**
 
 ---
 
