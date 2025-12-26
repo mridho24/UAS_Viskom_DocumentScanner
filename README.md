@@ -1,8 +1,5 @@
 # 📄 UAS_Viskom_DocumentScanner
 
-Nama: Muhammad Ridho
-NPM : 2208107010064
-
 <div align="center">
 
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.x-blue?logo=opencv)
@@ -15,6 +12,9 @@ NPM : 2208107010064
 [Demo](#-demo) • [Fitur](#-fitur-utama) • [Instalasi](#-instalasi) • [Penggunaan](#-cara-penggunaan) • [Teknologi](#-teknologi)
 
 </div>
+
+Nama: Muhammad Ridho
+NPM : 2208107010064
 
 ---
 
