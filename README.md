@@ -11,10 +11,10 @@
 
 [Demo](#-demo) • [Fitur](#-fitur-utama) • [Instalasi](#-instalasi) • [Penggunaan](#-cara-penggunaan) • [Teknologi](#-teknologi)
 
-</div>
-
 **Nama: Muhammad Ridho**
 **NPM : 2208107010064**
+
+</div>
 
 ---
 
