@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Document Scanner - Web App</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- CSS terpisah -->
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <!-- Background accents -->
+      <div class="bg-accent bg-accent--top"></div>
+      <div class="bg-accent bg-accent--bottom"></div>
+
+      <header class="site-header">
+        <div class="site-header__brand">
+          <div class="brand-mark">
+            <span class="brand-mark__dot"></span>
+            <span class="brand-mark__square"></span>
+          </div>
+          <div class="brand-text">
+            <span class="brand-text__title">Smart Document Scanner</span>
+            <span class="brand-text__subtitle">Visi Komputer · Semester 7</span>
+          </div>
+        </div>
+
+        <div class="site-header__meta">
+          <span class="meta-tag">Proyek Akhir</span>
+          <span class="meta-author">Muhammad Ridho · 2208107010064</span>
+        </div>
+      </header>
+
+      <main class="main-layout">
+        <!-- Kolom kiri: Upload / info -->
+        <section class="main-panel">
+          <div class="hero-copy" data-animate="fade-up">
+            <h1 class="hero-title">
+              Pindai dokumen,<br />
+              <span class="hero-title__accent"
+                >rapi seperti scanner fisik.</span
+              >
+            </h1>
+            <p class="hero-subtitle">
+              Deteksi tepi otomatis, koreksi perspektif, dan peningkatan
+              kualitas dokumen berbasis <strong>OpenCV</strong> &amp;
+              <strong>Computer Vision</strong>.
+            </p>
+
+            <ul class="hero-bullets">
+              <li>
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Corner detection
+                &amp; perspective transform
+              </li>
+              <li>
+                <i class="fa-solid fa-layer-group"></i> Beberapa tahap
+                peningkatan hasil
+              </li>
+              <li>
+                <i class="fa-solid fa-file-arrow-down"></i> Download hasil dalam
+                sekali klik
+              </li>
+            </ul>
+          </div>
+
+          <!-- Upload Section -->
+          <section class="upload-section" aria-label="Upload dokumen">
+            <div
+              class="upload-card"
+              id="uploadBox"
+              data-animate="fade-up"
+              data-animate-delay="0.05"
+            >
+              <div class="upload-card__header">
+                <div class="upload-icon-shell">
+                  <i class="fas fa-file-arrow-up"></i>
+                </div>
+                <div>
+                  <h2>Upload dokumen Anda</h2>
+                  <p>Seret &amp; lepas gambar atau pilih dari perangkat.</p>
+                </div>
+              </div>
+
+              <div
+                class="upload-dropzone"
+                role="button"
+                tabindex="0"
+                aria-label="Area upload, klik untuk memilih file atau seret dan lepas"
+              >
+                <div class="upload-dropzone__inner">
+                  <i class="fas fa-cloud-upload-alt upload-dropzone__icon"></i>
+                  <p class="upload-dropzone__title">
+                    Tarik &amp; lepas file ke sini
+                  </p>
+                  <p class="upload-dropzone__or">atau</p>
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                    onclick="document.getElementById('fileInput').click()"
+                  >
+                    <i class="fas fa-folder-open"></i>
+                    Pilih File
+                  </button>
+                  <p class="upload-dropzone__hint">
+                    Mendukung: JPG, PNG, BMP, TIFF, WEBP &middot; Maksimal 16MB
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  id="fileInput"
+                  accept="image/*"
+                  hidden
+                  aria-hidden="true"
+                />
+              </div>
+
+              <div class="upload-footer">
+                <div
+                  class="upload-status upload-status--idle"
+                  id="uploadStatus"
+                >
+                  <span class="status-dot"></span>
+                  <span class="status-text">Belum ada file yang dipilih</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div
+              id="loadingSection"
+              class="loading-panel is-hidden"
+              aria-live="polite"
+            >
+              <div class="loading-panel__inner">
+                <div class="loading-spinner">
+                  <span></span><span></span><span></span>
+                </div>
+                <div>
+                  <p class="loading-title">Memproses dokumen...</p>
+                  <p class="loading-desc">
+                    Mendeteksi tepi, mengekstraksi sudut, dan melakukan koreksi
+                    perspektif.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- Kolom kanan: Hasil -->
+        <section
+          id="resultsSection"
+          class="results-shell is-hidden"
+          aria-label="Hasil pemrosesan dokumen"
+        >
+          <!-- Strategy Info -->
+          <div class="strategy-card" data-animate="fade-left">
+            <div class="strategy-card__icon">
+              <i class="fas fa-info"></i>
+            </div>
+            <div class="strategy-card__content">
+              <span class="strategy-label">Strategi Deteksi</span>
+              <p class="strategy-value" id="strategyInfo">-</p>
+            </div>
+          </div>
+
+          <!-- Image Results Grid -->
+          <div class="results-grid">
+            <!-- Original -->
+            <article
+              class="result-card"
+              data-animate="fade-left"
+              data-animate-delay="0.05"
+            >
+              <header class="result-card__header">
+                <h3>
+                  <i class="fas fa-image"></i>
+                  Original
+                </h3>
+                <span class="result-tag">Input</span>
+              </header>
+              <div class="result-card__body">
+                <div class="image-frame">
+                  <img
+                    id="imgOriginal"
+                    src=""
+                    alt="Gambar asli yang diunggah"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </article>
+
+            <!-- Corners Detected -->
+            <article
+              class="result-card"
+              data-animate="fade-left"
+              data-animate-delay="0.1"
+            >
+              <header class="result-card__header">
+                <h3>
+                  <i class="fas fa-crosshairs"></i>
+                  Corner Detection
+                </h3>
+                <span class="result-tag">Analisis</span>
+              </header>
+              <div class="result-card__body">
+                <div class="image-frame">
+                  <img
+                    id="imgCorners"
+                    src=""
+                    alt="Visualisasi sudut dokumen yang terdeteksi"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </article>
+
+            <!-- Perspective Corrected -->
+            <article
+              class="result-card"
+              data-animate="fade-left"
+              data-animate-delay="0.15"
+            >
+              <header class="result-card__header">
+                <h3>
+                  <i class="fas fa-expand"></i>
+                  Perspective Corrected
+                </h3>
+                <span class="result-tag">Transform</span>
+              </header>
+              <div class="result-card__body">
+                <div class="image-frame">
+                  <img
+                    id="imgWarped"
+                    src=""
+                    alt="Gambar dengan perspektif yang sudah dikoreksi"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <footer class="result-card__footer">
+                <button
+                  class="btn btn-ghost"
+                  type="button"
+                  onclick="downloadImage('warped')"
+                >
+                  <i class="fas fa-download"></i>
+                  Download
+                </button>
+              </footer>
+            </article>
+
+            <!-- Scanned Effect -->
+            <article
+              class="result-card"
+              data-animate="fade-left"
+              data-animate-delay="0.2"
+            >
+              <header class="result-card__header">
+                <h3>
+                  <i class="fas fa-adjust"></i>
+                  Scanned Effect
+                </h3>
+                <span class="result-tag">Filter</span>
+              </header>
+              <div class="result-card__body">
+                <div class="image-frame">
+                  <img
+                    id="imgScanned"
+                    src=""
+                    alt="Gambar dengan efek pemindaian dokumen"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <footer class="result-card__footer">
+                <button
+                  class="btn btn-ghost"
+                  type="button"
+                  onclick="downloadImage('scanned')"
+                >
+                  <i class="fas fa-download"></i>
+                  Download
+                </button>
+              </footer>
+            </article>
+
+            <!-- Enhanced Result -->
+            <article
+              class="result-card result-card--featured"
+              data-animate="fade-left"
+              data-animate-delay="0.25"
+            >
+              <header class="result-card__header">
+                <h3>
+                  <i class="fas fa-star"></i>
+                  Final Enhanced
+                </h3>
+                <span class="result-tag result-tag--primary">Recommended</span>
+              </header>
+              <div class="result-card__body">
+                <div class="image-frame image-frame--accent">
+                  <img
+                    id="imgEnhanced"
+                    src=""
+                    alt="Hasil akhir dokumen yang sudah ditingkatkan"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <footer class="result-card__footer">
+                <button
+                  class="btn btn-primary btn-full"
+                  type="button"
+                  onclick="downloadImage('enhanced')"
+                >
+                  <i class="fas fa-download"></i>
+                  Download hasil terbaik
+                </button>
+              </footer>
+            </article>
+          </div>
+
+          <!-- Action Buttons -->
+          <div
+            class="results-actions"
+            data-animate="fade-left"
+            data-animate-delay="0.3"
+          >
+            <button
+              class="btn btn-outline"
+              type="button"
+              onclick="resetUpload()"
+            >
+              <i class="fas fa-redo"></i>
+              Upload dokumen lain
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="site-footer__left">
+          <span>&copy; 2024/2025 · Smart Document Scanner</span>
+          <span>Mata Kuliah Visi Komputer · Semester 7</span>
+        </div>
+        <div class="site-footer__right">
+          <span class="tech-pill">OpenCV</span>
+          <span class="tech-pill">Python Flask</span>
+          <span class="tech-pill">Computer Vision</span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- JS asli Anda -->
+    <script src="/static/script.js"></script>
+
+    <!-- Animasi scroll sederhana -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const animated = document.querySelectorAll("[data-animate]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15 }
+        );
+
+        animated.forEach((el) => {
+          const delay = el.getAttribute("data-animate-delay");
+          if (delay) {
+            el.style.setProperty("--animate-delay", `${delay}s`);
+          }
+          io.observe(el);
+        });
+      });
+    </script>
+  </body>
+</html>
